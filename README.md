@@ -1,4 +1,4 @@
-# buil-a-bot
+# build-a-bot
 
 ## Project setup
 ```
