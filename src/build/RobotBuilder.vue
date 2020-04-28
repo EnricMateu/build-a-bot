@@ -1,9 +1,12 @@
 <template>
-  <div>
+  <div class="content">
+    <button class="add-to-cart" @click="addToCart()">Add to Cart</button>
     <div class="top-row">
       <div class="top part">
         <div class="robot-name">
           {{ selectedRobot.head.title }}
+          <span v-if="selectedRobot.head.onSale"
+          class="sale">Sale!</span>
         </div>
         <img :src="selectedRobot.head.src" title="head" />
         <button @click="selectPreviousHead()" class="prev-selector">&#9668;</button>
@@ -34,10 +37,25 @@
         <button @click="selectNextBase()" class="next-selector">&#9658;</button>
       </div>
     </div>
+    <div>
+      <h1>Cart</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Robot</th>
+            <th class="cost">Cost</th>
+          </tr>
+        </thead>
+        <tbody v-for="(robot, index) in cart" :key="index">
+          <td>{{ robot.head.title }}</td>
+          <td class="cost">{{ robot. cost }}</td>
+        </tbody>
+      </table>
+    </div>
   </div>
 </template>
 <script>
-import availableParts from "../data/parts";
+import availableParts from '../data/parts';
 
 function getPreviousValidIndex(index, length) {
   const deprecatedIndex = index - 1;
@@ -49,15 +67,16 @@ function getNextValidIndex(index, length) {
   return incrementedIndex > length - 1 ? 0 : incrementedIndex;
 }
 export default {
-  name: "RobotBuilder",
+  name: 'RobotBuilder',
   data() {
     return {
       availableParts,
+      cart: [],
       selectedHeadIndex: 0,
       selectedLeftArmIndex: 0,
       selectedTorsoIndex: 0,
       selectedRightArmIndex: 0,
-      selectedBaseIndex: 0
+      selectedBaseIndex: 0,
     };
   },
   computed: {
@@ -67,72 +86,81 @@ export default {
         leftArm: availableParts.arms[this.selectedLeftArmIndex],
         torso: availableParts.torsos[this.selectedTorsoIndex],
         rightArm: availableParts.arms[this.selectedRightArmIndex],
-        base: availableParts.bases[this.selectedBaseIndex]
+        base: availableParts.bases[this.selectedBaseIndex],
       };
-    }
+    },
   },
   methods: {
+    addToCart() {
+      const robot = this.selectedRobot;
+      const cost = robot.head.cost
+        + robot.leftArm.cost
+        + robot.torso.cost
+        + robot.rightArm.cost
+        + robot.base.cost;
+      this.cart.push({ ...robot, cost });
+    },
     selectNextHead() {
       this.selectedHeadIndex = getNextValidIndex(
         this.selectedHeadIndex,
-        availableParts.heads.length
+        availableParts.heads.length,
       );
     },
     selectPreviousHead() {
       this.selectedHeadIndex = getPreviousValidIndex(
         this.selectedHeadIndex,
-        availableParts.heads.length
+        availableParts.heads.length,
       );
     },
     selectNextLeftArm() {
       this.selectedLeftArmIndex = getNextValidIndex(
         this.selectedLeftArmIndex,
-        availableParts.arms.length
+        availableParts.arms.length,
       );
     },
     selectPreviousLeftArm() {
       this.selectedLeftArmIndex = getPreviousValidIndex(
         this.selectedLeftArmIndex,
-        availableParts.arms.length
+        availableParts.arms.length,
       );
     },
     selectNextTorso() {
       this.selectedTorsoIndex = getNextValidIndex(
         this.selectedTorsoIndex,
-        availableParts.torsos.length
+        availableParts.torsos.length,
       );
     },
     selectPreviousTorso() {
       this.selectedTorsoIndex = getPreviousValidIndex(
         this.selectedTorsoIndex,
-        availableParts.torsos.length
+        availableParts.torsos.length,
       );
     },
     selectNextRightArm() {
       this.selectedRightArmIndex = getNextValidIndex(
         this.selectedRightArmIndex,
-        availableParts.arms.length
+        availableParts.arms.length,
       );
     },
     selectPreviousRightArm() {
       this.selectedRightArmIndex = getPreviousValidIndex(
         this.selectedRightArmIndex,
-        availableParts.arms.length
+        availableParts.arms.length,
       );
     },
     selectNextBase() {
       this.selectedBaseIndex = getNextValidIndex(
         this.selectedBaseIndex,
-        availableParts.bases.length
+        availableParts.bases.length,
       );
     },
     selectPreviousBase() {
       this.selectedBaseIndex = getPreviousValidIndex(
         this.selectedBaseIndex,
-        availableParts.bases.length
+        availableParts.bases.length,
       );
-    }
-  }
+    },
+  },
 };
 </script>
 
@@ -231,5 +259,26 @@ export default {
   top: -25px;
   text-align: center;
   width: 100%;
+}
+.sale {
+  color: red;
+}
+.content {
+  position: relative;
+}
+.add-to-cart {
+  position: absolute;
+  right: 30px;
+  width: 220px;
+  padding: 3px;
+  font-size: 16px;
+}
+td, th {
+  text-align: left;
+  padding: 5px;
+  padding-right: 20px;
+}
+.cost {
+  text-align: right;
 }
 </style>
